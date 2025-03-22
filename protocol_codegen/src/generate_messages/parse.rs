@@ -6,6 +6,14 @@ use json_comments::StripComments;
 use serde_json::Value;
 
 use super::spec::Spec;
+use super::spec::SpecHeader;
+
+pub fn parse_spec_header(path: &Path) -> Result<SpecHeader, Error> {
+    let buf = fs::read(path)?;
+    let stripped = StripComments::new(buf.as_slice());
+    let original_json: Value = serde_json::from_reader(stripped)?;
+    Ok(serde_json::from_value(original_json)?)
+}
 
 pub fn parse(path: &Path) -> Result<Spec, Error> {
     let buf = fs::read(path)?;

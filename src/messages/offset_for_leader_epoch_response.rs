@@ -17,28 +17,28 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-4
+/// Valid versions: 2-4
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct EpochEndOffset {
     /// The error code 0, or if there was no error.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub error_code: i16,
 
     /// The partition index.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub partition: i32,
 
     /// The leader epoch of the partition.
     ///
-    /// Supported API versions: 1-4
+    /// Supported API versions: 2-4
     pub leader_epoch: i32,
 
     /// The end offset of the epoch.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub end_offset: i64,
 
     /// Other tagged fields
@@ -50,7 +50,7 @@ impl EpochEndOffset {
     ///
     /// The error code 0, or if there was no error.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -59,7 +59,7 @@ impl EpochEndOffset {
     ///
     /// The partition index.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_partition(mut self, value: i32) -> Self {
         self.partition = value;
         self
@@ -68,7 +68,7 @@ impl EpochEndOffset {
     ///
     /// The leader epoch of the partition.
     ///
-    /// Supported API versions: 1-4
+    /// Supported API versions: 2-4
     pub fn with_leader_epoch(mut self, value: i32) -> Self {
         self.leader_epoch = value;
         self
@@ -77,7 +77,7 @@ impl EpochEndOffset {
     ///
     /// The end offset of the epoch.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_end_offset(mut self, value: i64) -> Self {
         self.end_offset = value;
         self
@@ -99,9 +99,7 @@ impl Encodable for EpochEndOffset {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
         types::Int16.encode(buf, &self.error_code)?;
         types::Int32.encode(buf, &self.partition)?;
-        if version >= 1 {
-            types::Int32.encode(buf, &self.leader_epoch)?;
-        }
+        types::Int32.encode(buf, &self.leader_epoch)?;
         types::Int64.encode(buf, &self.end_offset)?;
         if version >= 4 {
             let num_tagged_fields = self.unknown_tagged_fields.len();
@@ -121,9 +119,7 @@ impl Encodable for EpochEndOffset {
         let mut total_size = 0;
         total_size += types::Int16.compute_size(&self.error_code)?;
         total_size += types::Int32.compute_size(&self.partition)?;
-        if version >= 1 {
-            total_size += types::Int32.compute_size(&self.leader_epoch)?;
-        }
+        total_size += types::Int32.compute_size(&self.leader_epoch)?;
         total_size += types::Int64.compute_size(&self.end_offset)?;
         if version >= 4 {
             let num_tagged_fields = self.unknown_tagged_fields.len();
@@ -146,11 +142,7 @@ impl Decodable for EpochEndOffset {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
         let error_code = types::Int16.decode(buf)?;
         let partition = types::Int32.decode(buf)?;
-        let leader_epoch = if version >= 1 {
-            types::Int32.decode(buf)?
-        } else {
-            -1
-        };
+        let leader_epoch = types::Int32.decode(buf)?;
         let end_offset = types::Int64.decode(buf)?;
         let mut unknown_tagged_fields = BTreeMap::new();
         if version >= 4 {
@@ -185,11 +177,11 @@ impl Default for EpochEndOffset {
 }
 
 impl Message for EpochEndOffset {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 4 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 4 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-4
+/// Valid versions: 2-4
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct OffsetForLeaderEpochResponse {
@@ -200,7 +192,7 @@ pub struct OffsetForLeaderEpochResponse {
 
     /// Each topic we fetched offsets for.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub topics: Vec<OffsetForLeaderTopicResult>,
 
     /// Other tagged fields
@@ -221,7 +213,7 @@ impl OffsetForLeaderEpochResponse {
     ///
     /// Each topic we fetched offsets for.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_topics(mut self, value: Vec<OffsetForLeaderTopicResult>) -> Self {
         self.topics = value;
         self
@@ -241,9 +233,7 @@ impl OffsetForLeaderEpochResponse {
 #[cfg(feature = "broker")]
 impl Encodable for OffsetForLeaderEpochResponse {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
-        if version >= 2 {
-            types::Int32.encode(buf, &self.throttle_time_ms)?;
-        }
+        types::Int32.encode(buf, &self.throttle_time_ms)?;
         if version >= 4 {
             types::CompactArray(types::Struct { version }).encode(buf, &self.topics)?;
         } else {
@@ -265,9 +255,7 @@ impl Encodable for OffsetForLeaderEpochResponse {
     }
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
-        if version >= 2 {
-            total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
-        }
+        total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
         if version >= 4 {
             total_size +=
                 types::CompactArray(types::Struct { version }).compute_size(&self.topics)?;
@@ -293,11 +281,7 @@ impl Encodable for OffsetForLeaderEpochResponse {
 #[cfg(feature = "client")]
 impl Decodable for OffsetForLeaderEpochResponse {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
-        let throttle_time_ms = if version >= 2 {
-            types::Int32.decode(buf)?
-        } else {
-            0
-        };
+        let throttle_time_ms = types::Int32.decode(buf)?;
         let topics = if version >= 4 {
             types::CompactArray(types::Struct { version }).decode(buf)?
         } else {
@@ -332,22 +316,22 @@ impl Default for OffsetForLeaderEpochResponse {
 }
 
 impl Message for OffsetForLeaderEpochResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 4 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 4 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-4
+/// Valid versions: 2-4
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct OffsetForLeaderTopicResult {
     /// The topic name.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub topic: super::TopicName,
 
     /// Each partition in the topic we fetched offsets for.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub partitions: Vec<EpochEndOffset>,
 
     /// Other tagged fields
@@ -359,7 +343,7 @@ impl OffsetForLeaderTopicResult {
     ///
     /// The topic name.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_topic(mut self, value: super::TopicName) -> Self {
         self.topic = value;
         self
@@ -368,7 +352,7 @@ impl OffsetForLeaderTopicResult {
     ///
     /// Each partition in the topic we fetched offsets for.
     ///
-    /// Supported API versions: 0-4
+    /// Supported API versions: 2-4
     pub fn with_partitions(mut self, value: Vec<EpochEndOffset>) -> Self {
         self.partitions = value;
         self
@@ -483,7 +467,7 @@ impl Default for OffsetForLeaderTopicResult {
 }
 
 impl Message for OffsetForLeaderTopicResult {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 4 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 4 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

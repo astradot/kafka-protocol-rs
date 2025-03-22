@@ -1392,14 +1392,14 @@ pub fn generate(output_path: &str, spec: Spec) -> Result<Option<GenerationOutput
     let mut entity_types: BTreeSet<EntityType> = BTreeSet::new();
 
     let valid_versions = if spec.latest_version_unstable {
-        // skip unstable versions
-        spec.valid_versions.without_last()
+        println!("Generating {struct_name}, but it is unstable api");
+        spec.valid_versions
     } else {
         spec.valid_versions
     };
 
     // most likely, the spec has only one unstable version
-    if valid_versions.is_none() {
+    if spec.valid_versions.is_none() {
         println!("Skipping generation of {struct_name} because it has no valid versions");
         return Ok(None);
     }

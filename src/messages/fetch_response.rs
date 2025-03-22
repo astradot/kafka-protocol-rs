@@ -17,18 +17,18 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct AbortedTransaction {
     /// The producer id associated with the aborted transaction.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub producer_id: super::ProducerId,
 
     /// The first offset in the aborted transaction.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub first_offset: i64,
 
     /// Other tagged fields
@@ -40,7 +40,7 @@ impl AbortedTransaction {
     ///
     /// The producer id associated with the aborted transaction.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub fn with_producer_id(mut self, value: super::ProducerId) -> Self {
         self.producer_id = value;
         self
@@ -49,7 +49,7 @@ impl AbortedTransaction {
     ///
     /// The first offset in the aborted transaction.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub fn with_first_offset(mut self, value: i64) -> Self {
         self.first_offset = value;
         self
@@ -69,20 +69,8 @@ impl AbortedTransaction {
 #[cfg(feature = "broker")]
 impl Encodable for AbortedTransaction {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
-        if version >= 4 {
-            types::Int64.encode(buf, &self.producer_id)?;
-        } else {
-            if self.producer_id != 0 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
-        if version >= 4 {
-            types::Int64.encode(buf, &self.first_offset)?;
-        } else {
-            if self.first_offset != 0 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
+        types::Int64.encode(buf, &self.producer_id)?;
+        types::Int64.encode(buf, &self.first_offset)?;
         if version >= 12 {
             let num_tagged_fields = self.unknown_tagged_fields.len();
             if num_tagged_fields > std::u32::MAX as usize {
@@ -99,20 +87,8 @@ impl Encodable for AbortedTransaction {
     }
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
-        if version >= 4 {
-            total_size += types::Int64.compute_size(&self.producer_id)?;
-        } else {
-            if self.producer_id != 0 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
-        if version >= 4 {
-            total_size += types::Int64.compute_size(&self.first_offset)?;
-        } else {
-            if self.first_offset != 0 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
+        total_size += types::Int64.compute_size(&self.producer_id)?;
+        total_size += types::Int64.compute_size(&self.first_offset)?;
         if version >= 12 {
             let num_tagged_fields = self.unknown_tagged_fields.len();
             if num_tagged_fields > std::u32::MAX as usize {
@@ -132,16 +108,8 @@ impl Encodable for AbortedTransaction {
 #[cfg(feature = "client")]
 impl Decodable for AbortedTransaction {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
-        let producer_id = if version >= 4 {
-            types::Int64.decode(buf)?
-        } else {
-            (0).into()
-        };
-        let first_offset = if version >= 4 {
-            types::Int64.decode(buf)?
-        } else {
-            0
-        };
+        let producer_id = types::Int64.decode(buf)?;
+        let first_offset = types::Int64.decode(buf)?;
         let mut unknown_tagged_fields = BTreeMap::new();
         if version >= 12 {
             let num_tagged_fields = types::UnsignedVarInt.decode(buf)?;
@@ -171,22 +139,22 @@ impl Default for AbortedTransaction {
 }
 
 impl Message for AbortedTransaction {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct EpochEndOffset {
+    /// The largest epoch.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub epoch: i32,
 
+    /// The end offset of the epoch.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub end_offset: i64,
 
     /// Other tagged fields
@@ -196,18 +164,18 @@ pub struct EpochEndOffset {
 impl EpochEndOffset {
     /// Sets `epoch` to the passed value.
     ///
+    /// The largest epoch.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_epoch(mut self, value: i32) -> Self {
         self.epoch = value;
         self
     }
     /// Sets `end_offset` to the passed value.
     ///
+    /// The end offset of the epoch.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_end_offset(mut self, value: i64) -> Self {
         self.end_offset = value;
         self
@@ -329,37 +297,37 @@ impl Default for EpochEndOffset {
 }
 
 impl Message for EpochEndOffset {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct FetchResponse {
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 1-16
+    /// Supported API versions: 4-17
     pub throttle_time_ms: i32,
 
     /// The top level response error code.
     ///
-    /// Supported API versions: 7-16
+    /// Supported API versions: 7-17
     pub error_code: i16,
 
     /// The fetch session ID, or 0 if this is not part of a fetch session.
     ///
-    /// Supported API versions: 7-16
+    /// Supported API versions: 7-17
     pub session_id: i32,
 
     /// The response topics.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub responses: Vec<FetchableTopicResponse>,
 
     /// Endpoints for all current-leaders enumerated in PartitionData, with errors NOT_LEADER_OR_FOLLOWER & FENCED_LEADER_EPOCH.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub node_endpoints: Vec<NodeEndpoint>,
 
     /// Other tagged fields
@@ -371,7 +339,7 @@ impl FetchResponse {
     ///
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 1-16
+    /// Supported API versions: 4-17
     pub fn with_throttle_time_ms(mut self, value: i32) -> Self {
         self.throttle_time_ms = value;
         self
@@ -380,7 +348,7 @@ impl FetchResponse {
     ///
     /// The top level response error code.
     ///
-    /// Supported API versions: 7-16
+    /// Supported API versions: 7-17
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -389,7 +357,7 @@ impl FetchResponse {
     ///
     /// The fetch session ID, or 0 if this is not part of a fetch session.
     ///
-    /// Supported API versions: 7-16
+    /// Supported API versions: 7-17
     pub fn with_session_id(mut self, value: i32) -> Self {
         self.session_id = value;
         self
@@ -398,7 +366,7 @@ impl FetchResponse {
     ///
     /// The response topics.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_responses(mut self, value: Vec<FetchableTopicResponse>) -> Self {
         self.responses = value;
         self
@@ -407,7 +375,7 @@ impl FetchResponse {
     ///
     /// Endpoints for all current-leaders enumerated in PartitionData, with errors NOT_LEADER_OR_FOLLOWER & FENCED_LEADER_EPOCH.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub fn with_node_endpoints(mut self, value: Vec<NodeEndpoint>) -> Self {
         self.node_endpoints = value;
         self
@@ -427,9 +395,7 @@ impl FetchResponse {
 #[cfg(feature = "broker")]
 impl Encodable for FetchResponse {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
-        if version >= 1 {
-            types::Int32.encode(buf, &self.throttle_time_ms)?;
-        }
+        types::Int32.encode(buf, &self.throttle_time_ms)?;
         if version >= 7 {
             types::Int16.encode(buf, &self.error_code)?;
         }
@@ -481,9 +447,7 @@ impl Encodable for FetchResponse {
     }
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
-        if version >= 1 {
-            total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
-        }
+        total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
         if version >= 7 {
             total_size += types::Int16.compute_size(&self.error_code)?;
         }
@@ -538,11 +502,7 @@ impl Encodable for FetchResponse {
 #[cfg(feature = "client")]
 impl Decodable for FetchResponse {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
-        let throttle_time_ms = if version >= 1 {
-            types::Int32.decode(buf)?
-        } else {
-            0
-        };
+        let throttle_time_ms = types::Int32.decode(buf)?;
         let error_code = if version >= 7 {
             types::Int16.decode(buf)?
         } else {
@@ -606,27 +566,27 @@ impl Default for FetchResponse {
 }
 
 impl Message for FetchResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct FetchableTopicResponse {
     /// The topic name.
     ///
-    /// Supported API versions: 0-12
+    /// Supported API versions: 4-12
     pub topic: super::TopicName,
 
-    /// The unique topic ID
+    /// The unique topic ID.
     ///
-    /// Supported API versions: 13-16
+    /// Supported API versions: 13-17
     pub topic_id: Uuid,
 
     /// The topic partitions.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub partitions: Vec<PartitionData>,
 
     /// Other tagged fields
@@ -638,16 +598,16 @@ impl FetchableTopicResponse {
     ///
     /// The topic name.
     ///
-    /// Supported API versions: 0-12
+    /// Supported API versions: 4-12
     pub fn with_topic(mut self, value: super::TopicName) -> Self {
         self.topic = value;
         self
     }
     /// Sets `topic_id` to the passed value.
     ///
-    /// The unique topic ID
+    /// The unique topic ID.
     ///
-    /// Supported API versions: 13-16
+    /// Supported API versions: 13-17
     pub fn with_topic_id(mut self, value: Uuid) -> Self {
         self.topic_id = value;
         self
@@ -656,7 +616,7 @@ impl FetchableTopicResponse {
     ///
     /// The topic partitions.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_partitions(mut self, value: Vec<PartitionData>) -> Self {
         self.partitions = value;
         self
@@ -792,22 +752,22 @@ impl Default for FetchableTopicResponse {
 }
 
 impl Message for FetchableTopicResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct LeaderIdAndEpoch {
     /// The ID of the current leader or -1 if the leader is unknown.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub leader_id: super::BrokerId,
 
-    /// The latest known leader epoch
+    /// The latest known leader epoch.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub leader_epoch: i32,
 
     /// Other tagged fields
@@ -819,16 +779,16 @@ impl LeaderIdAndEpoch {
     ///
     /// The ID of the current leader or -1 if the leader is unknown.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_leader_id(mut self, value: super::BrokerId) -> Self {
         self.leader_id = value;
         self
     }
     /// Sets `leader_epoch` to the passed value.
     ///
-    /// The latest known leader epoch
+    /// The latest known leader epoch.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_leader_epoch(mut self, value: i32) -> Self {
         self.leader_epoch = value;
         self
@@ -950,32 +910,32 @@ impl Default for LeaderIdAndEpoch {
 }
 
 impl Message for LeaderIdAndEpoch {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct NodeEndpoint {
     /// The ID of the associated node.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub node_id: super::BrokerId,
 
     /// The node's hostname.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub host: StrBytes,
 
     /// The node's port.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub port: i32,
 
     /// The rack of the node, or null if it has not been assigned to a rack.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub rack: Option<StrBytes>,
 
     /// Other tagged fields
@@ -987,7 +947,7 @@ impl NodeEndpoint {
     ///
     /// The ID of the associated node.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub fn with_node_id(mut self, value: super::BrokerId) -> Self {
         self.node_id = value;
         self
@@ -996,7 +956,7 @@ impl NodeEndpoint {
     ///
     /// The node's hostname.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub fn with_host(mut self, value: StrBytes) -> Self {
         self.host = value;
         self
@@ -1005,7 +965,7 @@ impl NodeEndpoint {
     ///
     /// The node's port.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub fn with_port(mut self, value: i32) -> Self {
         self.port = value;
         self
@@ -1014,7 +974,7 @@ impl NodeEndpoint {
     ///
     /// The rack of the node, or null if it has not been assigned to a rack.
     ///
-    /// Supported API versions: 16
+    /// Supported API versions: 16-17
     pub fn with_rack(mut self, value: Option<StrBytes>) -> Self {
         self.rack = value;
         self
@@ -1178,67 +1138,67 @@ impl Default for NodeEndpoint {
 }
 
 impl Message for NodeEndpoint {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct PartitionData {
     /// The partition index.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub partition_index: i32,
 
     /// The error code, or 0 if there was no fetch error.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub error_code: i16,
 
     /// The current high water mark.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub high_watermark: i64,
 
-    /// The last stable offset (or LSO) of the partition. This is the last offset such that the state of all transactional records prior to this offset have been decided (ABORTED or COMMITTED)
+    /// The last stable offset (or LSO) of the partition. This is the last offset such that the state of all transactional records prior to this offset have been decided (ABORTED or COMMITTED).
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub last_stable_offset: i64,
 
     /// The current log start offset.
     ///
-    /// Supported API versions: 5-16
+    /// Supported API versions: 5-17
     pub log_start_offset: i64,
 
-    /// In case divergence is detected based on the `LastFetchedEpoch` and `FetchOffset` in the request, this field indicates the largest epoch and its end offset such that subsequent records are known to diverge
+    /// In case divergence is detected based on the `LastFetchedEpoch` and `FetchOffset` in the request, this field indicates the largest epoch and its end offset such that subsequent records are known to diverge.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub diverging_epoch: EpochEndOffset,
 
+    /// The current leader of the partition.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub current_leader: LeaderIdAndEpoch,
 
     /// In the case of fetching an offset less than the LogStartOffset, this is the end offset and epoch that should be used in the FetchSnapshot request.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub snapshot_id: SnapshotId,
 
     /// The aborted transactions.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub aborted_transactions: Option<Vec<AbortedTransaction>>,
 
-    /// The preferred read replica for the consumer to use on its next fetch request
+    /// The preferred read replica for the consumer to use on its next fetch request.
     ///
-    /// Supported API versions: 11-16
+    /// Supported API versions: 11-17
     pub preferred_read_replica: super::BrokerId,
 
     /// The record data.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub records: Option<Bytes>,
 
     /// Other tagged fields
@@ -1250,7 +1210,7 @@ impl PartitionData {
     ///
     /// The partition index.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_partition_index(mut self, value: i32) -> Self {
         self.partition_index = value;
         self
@@ -1259,7 +1219,7 @@ impl PartitionData {
     ///
     /// The error code, or 0 if there was no fetch error.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -1268,16 +1228,16 @@ impl PartitionData {
     ///
     /// The current high water mark.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_high_watermark(mut self, value: i64) -> Self {
         self.high_watermark = value;
         self
     }
     /// Sets `last_stable_offset` to the passed value.
     ///
-    /// The last stable offset (or LSO) of the partition. This is the last offset such that the state of all transactional records prior to this offset have been decided (ABORTED or COMMITTED)
+    /// The last stable offset (or LSO) of the partition. This is the last offset such that the state of all transactional records prior to this offset have been decided (ABORTED or COMMITTED).
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub fn with_last_stable_offset(mut self, value: i64) -> Self {
         self.last_stable_offset = value;
         self
@@ -1286,25 +1246,25 @@ impl PartitionData {
     ///
     /// The current log start offset.
     ///
-    /// Supported API versions: 5-16
+    /// Supported API versions: 5-17
     pub fn with_log_start_offset(mut self, value: i64) -> Self {
         self.log_start_offset = value;
         self
     }
     /// Sets `diverging_epoch` to the passed value.
     ///
-    /// In case divergence is detected based on the `LastFetchedEpoch` and `FetchOffset` in the request, this field indicates the largest epoch and its end offset such that subsequent records are known to diverge
+    /// In case divergence is detected based on the `LastFetchedEpoch` and `FetchOffset` in the request, this field indicates the largest epoch and its end offset such that subsequent records are known to diverge.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_diverging_epoch(mut self, value: EpochEndOffset) -> Self {
         self.diverging_epoch = value;
         self
     }
     /// Sets `current_leader` to the passed value.
     ///
+    /// The current leader of the partition.
     ///
-    ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_current_leader(mut self, value: LeaderIdAndEpoch) -> Self {
         self.current_leader = value;
         self
@@ -1313,7 +1273,7 @@ impl PartitionData {
     ///
     /// In the case of fetching an offset less than the LogStartOffset, this is the end offset and epoch that should be used in the FetchSnapshot request.
     ///
-    /// Supported API versions: 12-16
+    /// Supported API versions: 12-17
     pub fn with_snapshot_id(mut self, value: SnapshotId) -> Self {
         self.snapshot_id = value;
         self
@@ -1322,16 +1282,16 @@ impl PartitionData {
     ///
     /// The aborted transactions.
     ///
-    /// Supported API versions: 4-16
+    /// Supported API versions: 4-17
     pub fn with_aborted_transactions(mut self, value: Option<Vec<AbortedTransaction>>) -> Self {
         self.aborted_transactions = value;
         self
     }
     /// Sets `preferred_read_replica` to the passed value.
     ///
-    /// The preferred read replica for the consumer to use on its next fetch request
+    /// The preferred read replica for the consumer to use on its next fetch request.
     ///
-    /// Supported API versions: 11-16
+    /// Supported API versions: 11-17
     pub fn with_preferred_read_replica(mut self, value: super::BrokerId) -> Self {
         self.preferred_read_replica = value;
         self
@@ -1340,7 +1300,7 @@ impl PartitionData {
     ///
     /// The record data.
     ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_records(mut self, value: Option<Bytes>) -> Self {
         self.records = value;
         self
@@ -1363,19 +1323,15 @@ impl Encodable for PartitionData {
         types::Int32.encode(buf, &self.partition_index)?;
         types::Int16.encode(buf, &self.error_code)?;
         types::Int64.encode(buf, &self.high_watermark)?;
-        if version >= 4 {
-            types::Int64.encode(buf, &self.last_stable_offset)?;
-        }
+        types::Int64.encode(buf, &self.last_stable_offset)?;
         if version >= 5 {
             types::Int64.encode(buf, &self.log_start_offset)?;
         }
-        if version >= 4 {
-            if version >= 12 {
-                types::CompactArray(types::Struct { version })
-                    .encode(buf, &self.aborted_transactions)?;
-            } else {
-                types::Array(types::Struct { version }).encode(buf, &self.aborted_transactions)?;
-            }
+        if version >= 12 {
+            types::CompactArray(types::Struct { version })
+                .encode(buf, &self.aborted_transactions)?;
+        } else {
+            types::Array(types::Struct { version }).encode(buf, &self.aborted_transactions)?;
         }
         if version >= 11 {
             types::Int32.encode(buf, &self.preferred_read_replica)?;
@@ -1454,20 +1410,16 @@ impl Encodable for PartitionData {
         total_size += types::Int32.compute_size(&self.partition_index)?;
         total_size += types::Int16.compute_size(&self.error_code)?;
         total_size += types::Int64.compute_size(&self.high_watermark)?;
-        if version >= 4 {
-            total_size += types::Int64.compute_size(&self.last_stable_offset)?;
-        }
+        total_size += types::Int64.compute_size(&self.last_stable_offset)?;
         if version >= 5 {
             total_size += types::Int64.compute_size(&self.log_start_offset)?;
         }
-        if version >= 4 {
-            if version >= 12 {
-                total_size += types::CompactArray(types::Struct { version })
-                    .compute_size(&self.aborted_transactions)?;
-            } else {
-                total_size += types::Array(types::Struct { version })
-                    .compute_size(&self.aborted_transactions)?;
-            }
+        if version >= 12 {
+            total_size += types::CompactArray(types::Struct { version })
+                .compute_size(&self.aborted_transactions)?;
+        } else {
+            total_size +=
+                types::Array(types::Struct { version }).compute_size(&self.aborted_transactions)?;
         }
         if version >= 11 {
             total_size += types::Int32.compute_size(&self.preferred_read_replica)?;
@@ -1549,11 +1501,7 @@ impl Decodable for PartitionData {
         let partition_index = types::Int32.decode(buf)?;
         let error_code = types::Int16.decode(buf)?;
         let high_watermark = types::Int64.decode(buf)?;
-        let last_stable_offset = if version >= 4 {
-            types::Int64.decode(buf)?
-        } else {
-            -1
-        };
+        let last_stable_offset = types::Int64.decode(buf)?;
         let log_start_offset = if version >= 5 {
             types::Int64.decode(buf)?
         } else {
@@ -1562,14 +1510,10 @@ impl Decodable for PartitionData {
         let mut diverging_epoch = Default::default();
         let mut current_leader = Default::default();
         let mut snapshot_id = Default::default();
-        let aborted_transactions = if version >= 4 {
-            if version >= 12 {
-                types::CompactArray(types::Struct { version }).decode(buf)?
-            } else {
-                types::Array(types::Struct { version }).decode(buf)?
-            }
+        let aborted_transactions = if version >= 12 {
+            types::CompactArray(types::Struct { version }).decode(buf)?
         } else {
-            Some(Default::default())
+            types::Array(types::Struct { version }).decode(buf)?
         };
         let preferred_read_replica = if version >= 11 {
             types::Int32.decode(buf)?
@@ -1641,22 +1585,22 @@ impl Default for PartitionData {
 }
 
 impl Message for PartitionData {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-16
+/// Valid versions: 4-17
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct SnapshotId {
+    /// The end offset of the epoch.
     ///
-    ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub end_offset: i64,
 
+    /// The largest epoch.
     ///
-    ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub epoch: i32,
 
     /// Other tagged fields
@@ -1666,18 +1610,18 @@ pub struct SnapshotId {
 impl SnapshotId {
     /// Sets `end_offset` to the passed value.
     ///
+    /// The end offset of the epoch.
     ///
-    ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_end_offset(mut self, value: i64) -> Self {
         self.end_offset = value;
         self
     }
     /// Sets `epoch` to the passed value.
     ///
+    /// The largest epoch.
     ///
-    ///
-    /// Supported API versions: 0-16
+    /// Supported API versions: 4-17
     pub fn with_epoch(mut self, value: i32) -> Self {
         self.epoch = value;
         self
@@ -1767,7 +1711,7 @@ impl Default for SnapshotId {
 }
 
 impl Message for SnapshotId {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 16 };
+    const VERSIONS: VersionRange = VersionRange { min: 4, max: 17 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

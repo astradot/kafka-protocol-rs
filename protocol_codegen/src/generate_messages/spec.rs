@@ -9,6 +9,17 @@ use serde_plain::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SpecHeader {
+    #[serde(default)]
+    pub api_key: Option<i16>,
+    #[serde(rename = "type")]
+    pub type_: SpecType,
+    pub name: String,
+    pub valid_versions: VersionSpec,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Spec {
     #[serde(default)]
     pub api_key: Option<i16>,
@@ -134,6 +145,7 @@ impl VersionSpec {
 
     /// Returns the range `[VersionSpec]` without the last version.
     /// Only works for ranges, every other kind will return `None`.
+    #[allow(dead_code)]
     pub fn without_last(&self) -> Self {
         match self {
             VersionSpec::None => VersionSpec::None,

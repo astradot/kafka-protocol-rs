@@ -17,23 +17,23 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-6
+/// Valid versions: 1-6
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DeletableTopicResult {
-    /// The topic name
+    /// The topic name.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub name: Option<super::TopicName>,
 
-    /// the unique topic ID
+    /// The unique topic ID.
     ///
     /// Supported API versions: 6
     pub topic_id: Uuid,
 
     /// The deletion error, or 0 if the deletion succeeded.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub error_code: i16,
 
     /// The error message, or null if there was no error.
@@ -48,16 +48,16 @@ pub struct DeletableTopicResult {
 impl DeletableTopicResult {
     /// Sets `name` to the passed value.
     ///
-    /// The topic name
+    /// The topic name.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub fn with_name(mut self, value: Option<super::TopicName>) -> Self {
         self.name = value;
         self
     }
     /// Sets `topic_id` to the passed value.
     ///
-    /// the unique topic ID
+    /// The unique topic ID.
     ///
     /// Supported API versions: 6
     pub fn with_topic_id(mut self, value: Uuid) -> Self {
@@ -68,7 +68,7 @@ impl DeletableTopicResult {
     ///
     /// The deletion error, or 0 if the deletion succeeded.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -205,11 +205,11 @@ impl Default for DeletableTopicResult {
 }
 
 impl Message for DeletableTopicResult {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 6 };
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 6 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-6
+/// Valid versions: 1-6
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DeleteTopicsResponse {
@@ -220,7 +220,7 @@ pub struct DeleteTopicsResponse {
 
     /// The results for each topic we tried to delete.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub responses: Vec<DeletableTopicResult>,
 
     /// Other tagged fields
@@ -241,7 +241,7 @@ impl DeleteTopicsResponse {
     ///
     /// The results for each topic we tried to delete.
     ///
-    /// Supported API versions: 0-6
+    /// Supported API versions: 1-6
     pub fn with_responses(mut self, value: Vec<DeletableTopicResult>) -> Self {
         self.responses = value;
         self
@@ -261,9 +261,7 @@ impl DeleteTopicsResponse {
 #[cfg(feature = "broker")]
 impl Encodable for DeleteTopicsResponse {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
-        if version >= 1 {
-            types::Int32.encode(buf, &self.throttle_time_ms)?;
-        }
+        types::Int32.encode(buf, &self.throttle_time_ms)?;
         if version >= 4 {
             types::CompactArray(types::Struct { version }).encode(buf, &self.responses)?;
         } else {
@@ -285,9 +283,7 @@ impl Encodable for DeleteTopicsResponse {
     }
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
-        if version >= 1 {
-            total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
-        }
+        total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
         if version >= 4 {
             total_size +=
                 types::CompactArray(types::Struct { version }).compute_size(&self.responses)?;
@@ -313,11 +309,7 @@ impl Encodable for DeleteTopicsResponse {
 #[cfg(feature = "client")]
 impl Decodable for DeleteTopicsResponse {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
-        let throttle_time_ms = if version >= 1 {
-            types::Int32.decode(buf)?
-        } else {
-            0
-        };
+        let throttle_time_ms = types::Int32.decode(buf)?;
         let responses = if version >= 4 {
             types::CompactArray(types::Struct { version }).decode(buf)?
         } else {
@@ -352,7 +344,7 @@ impl Default for DeleteTopicsResponse {
 }
 
 impl Message for DeleteTopicsResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 6 };
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 6 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

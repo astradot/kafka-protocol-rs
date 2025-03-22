@@ -17,7 +17,7 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-5
+/// Valid versions: 0-6
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct FindCoordinatorRequest {
@@ -26,14 +26,14 @@ pub struct FindCoordinatorRequest {
     /// Supported API versions: 0-3
     pub key: StrBytes,
 
-    /// The coordinator key type. (Group, transaction, etc.)
+    /// The coordinator key type. (group, transaction, share).
     ///
-    /// Supported API versions: 1-5
+    /// Supported API versions: 1-6
     pub key_type: i8,
 
     /// The coordinator keys.
     ///
-    /// Supported API versions: 4-5
+    /// Supported API versions: 4-6
     pub coordinator_keys: Vec<StrBytes>,
 
     /// Other tagged fields
@@ -52,9 +52,9 @@ impl FindCoordinatorRequest {
     }
     /// Sets `key_type` to the passed value.
     ///
-    /// The coordinator key type. (Group, transaction, etc.)
+    /// The coordinator key type. (group, transaction, share).
     ///
-    /// Supported API versions: 1-5
+    /// Supported API versions: 1-6
     pub fn with_key_type(mut self, value: i8) -> Self {
         self.key_type = value;
         self
@@ -63,7 +63,7 @@ impl FindCoordinatorRequest {
     ///
     /// The coordinator keys.
     ///
-    /// Supported API versions: 4-5
+    /// Supported API versions: 4-6
     pub fn with_coordinator_keys(mut self, value: Vec<StrBytes>) -> Self {
         self.coordinator_keys = value;
         self
@@ -219,8 +219,8 @@ impl Default for FindCoordinatorRequest {
 }
 
 impl Message for FindCoordinatorRequest {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 5 };
-    const DEPRECATED_VERSIONS: Option<VersionRange> = Some(VersionRange { min: 0, max: 0 });
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 6 };
+    const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
 impl HeaderVersion for FindCoordinatorRequest {

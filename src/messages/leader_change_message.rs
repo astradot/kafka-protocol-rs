@@ -17,28 +17,28 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct LeaderChangeMessage {
-    /// The version of the leader change message
+    /// The version of the leader change message.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub version: i16,
 
-    /// The ID of the newly elected leader
+    /// The ID of the newly elected leader.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub leader_id: super::BrokerId,
 
-    /// The set of voters in the quorum for this epoch
+    /// The set of voters in the quorum for this epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub voters: Vec<Voter>,
 
-    /// The voters who voted for the leader at the time of election
+    /// The voters who voted for the leader at the time of election.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub granting_voters: Vec<Voter>,
 
     /// Other tagged fields
@@ -48,36 +48,36 @@ pub struct LeaderChangeMessage {
 impl LeaderChangeMessage {
     /// Sets `version` to the passed value.
     ///
-    /// The version of the leader change message
+    /// The version of the leader change message.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_version(mut self, value: i16) -> Self {
         self.version = value;
         self
     }
     /// Sets `leader_id` to the passed value.
     ///
-    /// The ID of the newly elected leader
+    /// The ID of the newly elected leader.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_leader_id(mut self, value: super::BrokerId) -> Self {
         self.leader_id = value;
         self
     }
     /// Sets `voters` to the passed value.
     ///
-    /// The set of voters in the quorum for this epoch
+    /// The set of voters in the quorum for this epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_voters(mut self, value: Vec<Voter>) -> Self {
         self.voters = value;
         self
     }
     /// Sets `granting_voters` to the passed value.
     ///
-    /// The voters who voted for the leader at the time of election
+    /// The voters who voted for the leader at the time of election.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_granting_voters(mut self, value: Vec<Voter>) -> Self {
         self.granting_voters = value;
         self
@@ -170,18 +170,23 @@ impl Default for LeaderChangeMessage {
 }
 
 impl Message for LeaderChangeMessage {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Voter {
+    /// The ID of the voter.
     ///
-    ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub voter_id: i32,
+
+    /// The directory id of the voter.
+    ///
+    /// Supported API versions: 1
+    pub voter_directory_id: Uuid,
 
     /// Other tagged fields
     pub unknown_tagged_fields: BTreeMap<i32, Bytes>,
@@ -190,11 +195,20 @@ pub struct Voter {
 impl Voter {
     /// Sets `voter_id` to the passed value.
     ///
+    /// The ID of the voter.
     ///
-    ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_voter_id(mut self, value: i32) -> Self {
         self.voter_id = value;
+        self
+    }
+    /// Sets `voter_directory_id` to the passed value.
+    ///
+    /// The directory id of the voter.
+    ///
+    /// Supported API versions: 1
+    pub fn with_voter_directory_id(mut self, value: Uuid) -> Self {
+        self.voter_directory_id = value;
         self
     }
     /// Sets unknown_tagged_fields to the passed value.
@@ -212,6 +226,13 @@ impl Voter {
 impl Encodable for Voter {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
         types::Int32.encode(buf, &self.voter_id)?;
+        if version >= 1 {
+            types::Uuid.encode(buf, &self.voter_directory_id)?;
+        } else {
+            if &self.voter_directory_id != &Uuid::nil() {
+                bail!("A field is set that is not available on the selected protocol version");
+            }
+        }
         let num_tagged_fields = self.unknown_tagged_fields.len();
         if num_tagged_fields > std::u32::MAX as usize {
             bail!(
@@ -227,6 +248,13 @@ impl Encodable for Voter {
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
         total_size += types::Int32.compute_size(&self.voter_id)?;
+        if version >= 1 {
+            total_size += types::Uuid.compute_size(&self.voter_directory_id)?;
+        } else {
+            if &self.voter_directory_id != &Uuid::nil() {
+                bail!("A field is set that is not available on the selected protocol version");
+            }
+        }
         let num_tagged_fields = self.unknown_tagged_fields.len();
         if num_tagged_fields > std::u32::MAX as usize {
             bail!(
@@ -244,6 +272,11 @@ impl Encodable for Voter {
 impl Decodable for Voter {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
         let voter_id = types::Int32.decode(buf)?;
+        let voter_directory_id = if version >= 1 {
+            types::Uuid.decode(buf)?
+        } else {
+            Uuid::nil()
+        };
         let mut unknown_tagged_fields = BTreeMap::new();
         let num_tagged_fields = types::UnsignedVarInt.decode(buf)?;
         for _ in 0..num_tagged_fields {
@@ -254,6 +287,7 @@ impl Decodable for Voter {
         }
         Ok(Self {
             voter_id,
+            voter_directory_id,
             unknown_tagged_fields,
         })
     }
@@ -263,12 +297,13 @@ impl Default for Voter {
     fn default() -> Self {
         Self {
             voter_id: 0,
+            voter_directory_id: Uuid::nil(),
             unknown_tagged_fields: BTreeMap::new(),
         }
     }
 }
 
 impl Message for Voter {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }

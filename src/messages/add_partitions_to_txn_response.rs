@@ -536,7 +536,7 @@ pub struct AddPartitionsToTxnTopicResult {
     /// Supported API versions: 0-5
     pub name: super::TopicName,
 
-    /// The results for each partition
+    /// The results for each partition.
     ///
     /// Supported API versions: 0-5
     pub results_by_partition: Vec<AddPartitionsToTxnPartitionResult>,
@@ -557,7 +557,7 @@ impl AddPartitionsToTxnTopicResult {
     }
     /// Sets `results_by_partition` to the passed value.
     ///
-    /// The results for each partition
+    /// The results for each partition.
     ///
     /// Supported API versions: 0-5
     pub fn with_results_by_partition(

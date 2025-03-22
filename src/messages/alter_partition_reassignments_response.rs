@@ -319,12 +319,12 @@ impl Message for ReassignablePartitionResponse {
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct ReassignableTopicResponse {
-    /// The topic name
+    /// The topic name.
     ///
     /// Supported API versions: 0
     pub name: super::TopicName,
 
-    /// The responses to partitions to reassign
+    /// The responses to partitions to reassign.
     ///
     /// Supported API versions: 0
     pub partitions: Vec<ReassignablePartitionResponse>,
@@ -336,7 +336,7 @@ pub struct ReassignableTopicResponse {
 impl ReassignableTopicResponse {
     /// Sets `name` to the passed value.
     ///
-    /// The topic name
+    /// The topic name.
     ///
     /// Supported API versions: 0
     pub fn with_name(mut self, value: super::TopicName) -> Self {
@@ -345,7 +345,7 @@ impl ReassignableTopicResponse {
     }
     /// Sets `partitions` to the passed value.
     ///
-    /// The responses to partitions to reassign
+    /// The responses to partitions to reassign.
     ///
     /// Supported API versions: 0
     pub fn with_partitions(mut self, value: Vec<ReassignablePartitionResponse>) -> Self {

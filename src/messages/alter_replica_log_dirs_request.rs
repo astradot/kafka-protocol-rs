@@ -17,18 +17,18 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-2
+/// Valid versions: 1-2
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct AlterReplicaLogDir {
     /// The absolute directory path.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub path: StrBytes,
 
     /// The topics to add to the directory.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub topics: Vec<AlterReplicaLogDirTopic>,
 
     /// Other tagged fields
@@ -40,7 +40,7 @@ impl AlterReplicaLogDir {
     ///
     /// The absolute directory path.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub fn with_path(mut self, value: StrBytes) -> Self {
         self.path = value;
         self
@@ -49,7 +49,7 @@ impl AlterReplicaLogDir {
     ///
     /// The topics to add to the directory.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub fn with_topics(mut self, value: Vec<AlterReplicaLogDirTopic>) -> Self {
         self.topics = value;
         self
@@ -164,22 +164,22 @@ impl Default for AlterReplicaLogDir {
 }
 
 impl Message for AlterReplicaLogDir {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 2 };
-    const DEPRECATED_VERSIONS: Option<VersionRange> = Some(VersionRange { min: 0, max: 0 });
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 2 };
+    const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-2
+/// Valid versions: 1-2
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct AlterReplicaLogDirTopic {
     /// The topic name.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub name: super::TopicName,
 
     /// The partition indexes.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub partitions: Vec<i32>,
 
     /// Other tagged fields
@@ -191,7 +191,7 @@ impl AlterReplicaLogDirTopic {
     ///
     /// The topic name.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub fn with_name(mut self, value: super::TopicName) -> Self {
         self.name = value;
         self
@@ -200,7 +200,7 @@ impl AlterReplicaLogDirTopic {
     ///
     /// The partition indexes.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub fn with_partitions(mut self, value: Vec<i32>) -> Self {
         self.partitions = value;
         self
@@ -314,17 +314,17 @@ impl Default for AlterReplicaLogDirTopic {
 }
 
 impl Message for AlterReplicaLogDirTopic {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 2 };
-    const DEPRECATED_VERSIONS: Option<VersionRange> = Some(VersionRange { min: 0, max: 0 });
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 2 };
+    const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-2
+/// Valid versions: 1-2
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct AlterReplicaLogDirsRequest {
     /// The alterations to make for each directory.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub dirs: Vec<AlterReplicaLogDir>,
 
     /// Other tagged fields
@@ -336,7 +336,7 @@ impl AlterReplicaLogDirsRequest {
     ///
     /// The alterations to make for each directory.
     ///
-    /// Supported API versions: 0-2
+    /// Supported API versions: 1-2
     pub fn with_dirs(mut self, value: Vec<AlterReplicaLogDir>) -> Self {
         self.dirs = value;
         self
@@ -434,8 +434,8 @@ impl Default for AlterReplicaLogDirsRequest {
 }
 
 impl Message for AlterReplicaLogDirsRequest {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 2 };
-    const DEPRECATED_VERSIONS: Option<VersionRange> = Some(VersionRange { min: 0, max: 0 });
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 2 };
+    const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
 impl HeaderVersion for AlterReplicaLogDirsRequest {

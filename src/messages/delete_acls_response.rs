@@ -17,23 +17,23 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-3
+/// Valid versions: 1-3
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DeleteAclsFilterResult {
     /// The error code, or 0 if the filter succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub error_code: i16,
 
     /// The error message, or null if the filter succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub error_message: Option<StrBytes>,
 
     /// The ACLs which matched this filter.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub matching_acls: Vec<DeleteAclsMatchingAcl>,
 
     /// Other tagged fields
@@ -45,7 +45,7 @@ impl DeleteAclsFilterResult {
     ///
     /// The error code, or 0 if the filter succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -54,7 +54,7 @@ impl DeleteAclsFilterResult {
     ///
     /// The error message, or null if the filter succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_error_message(mut self, value: Option<StrBytes>) -> Self {
         self.error_message = value;
         self
@@ -63,7 +63,7 @@ impl DeleteAclsFilterResult {
     ///
     /// The ACLs which matched this filter.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_matching_acls(mut self, value: Vec<DeleteAclsMatchingAcl>) -> Self {
         self.matching_acls = value;
         self
@@ -184,32 +184,32 @@ impl Default for DeleteAclsFilterResult {
 }
 
 impl Message for DeleteAclsFilterResult {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 3 };
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 3 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-3
+/// Valid versions: 1-3
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DeleteAclsMatchingAcl {
     /// The deletion error code, or 0 if the deletion succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub error_code: i16,
 
     /// The deletion error message, or null if the deletion succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub error_message: Option<StrBytes>,
 
     /// The ACL resource type.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub resource_type: i8,
 
     /// The ACL resource name.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub resource_name: StrBytes,
 
     /// The ACL resource pattern type.
@@ -219,22 +219,22 @@ pub struct DeleteAclsMatchingAcl {
 
     /// The ACL principal.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub principal: StrBytes,
 
     /// The ACL host.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub host: StrBytes,
 
     /// The ACL operation.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub operation: i8,
 
     /// The ACL permission type.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub permission_type: i8,
 
     /// Other tagged fields
@@ -246,7 +246,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The deletion error code, or 0 if the deletion succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -255,7 +255,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The deletion error message, or null if the deletion succeeded.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_error_message(mut self, value: Option<StrBytes>) -> Self {
         self.error_message = value;
         self
@@ -264,7 +264,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL resource type.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_resource_type(mut self, value: i8) -> Self {
         self.resource_type = value;
         self
@@ -273,7 +273,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL resource name.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_resource_name(mut self, value: StrBytes) -> Self {
         self.resource_name = value;
         self
@@ -291,7 +291,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL principal.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_principal(mut self, value: StrBytes) -> Self {
         self.principal = value;
         self
@@ -300,7 +300,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL host.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_host(mut self, value: StrBytes) -> Self {
         self.host = value;
         self
@@ -309,7 +309,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL operation.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_operation(mut self, value: i8) -> Self {
         self.operation = value;
         self
@@ -318,7 +318,7 @@ impl DeleteAclsMatchingAcl {
     ///
     /// The ACL permission type.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_permission_type(mut self, value: i8) -> Self {
         self.permission_type = value;
         self
@@ -350,13 +350,7 @@ impl Encodable for DeleteAclsMatchingAcl {
         } else {
             types::String.encode(buf, &self.resource_name)?;
         }
-        if version >= 1 {
-            types::Int8.encode(buf, &self.pattern_type)?;
-        } else {
-            if self.pattern_type != 3 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
+        types::Int8.encode(buf, &self.pattern_type)?;
         if version >= 2 {
             types::CompactString.encode(buf, &self.principal)?;
         } else {
@@ -397,13 +391,7 @@ impl Encodable for DeleteAclsMatchingAcl {
         } else {
             total_size += types::String.compute_size(&self.resource_name)?;
         }
-        if version >= 1 {
-            total_size += types::Int8.compute_size(&self.pattern_type)?;
-        } else {
-            if self.pattern_type != 3 {
-                bail!("A field is set that is not available on the selected protocol version");
-            }
-        }
+        total_size += types::Int8.compute_size(&self.pattern_type)?;
         if version >= 2 {
             total_size += types::CompactString.compute_size(&self.principal)?;
         } else {
@@ -447,11 +435,7 @@ impl Decodable for DeleteAclsMatchingAcl {
         } else {
             types::String.decode(buf)?
         };
-        let pattern_type = if version >= 1 {
-            types::Int8.decode(buf)?
-        } else {
-            3
-        };
+        let pattern_type = types::Int8.decode(buf)?;
         let principal = if version >= 2 {
             types::CompactString.decode(buf)?
         } else {
@@ -507,22 +491,22 @@ impl Default for DeleteAclsMatchingAcl {
 }
 
 impl Message for DeleteAclsMatchingAcl {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 3 };
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 3 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-3
+/// Valid versions: 1-3
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DeleteAclsResponse {
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub throttle_time_ms: i32,
 
     /// The results for each filter.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub filter_results: Vec<DeleteAclsFilterResult>,
 
     /// Other tagged fields
@@ -534,7 +518,7 @@ impl DeleteAclsResponse {
     ///
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_throttle_time_ms(mut self, value: i32) -> Self {
         self.throttle_time_ms = value;
         self
@@ -543,7 +527,7 @@ impl DeleteAclsResponse {
     ///
     /// The results for each filter.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 1-3
     pub fn with_filter_results(mut self, value: Vec<DeleteAclsFilterResult>) -> Self {
         self.filter_results = value;
         self
@@ -647,7 +631,7 @@ impl Default for DeleteAclsResponse {
 }
 
 impl Message for DeleteAclsResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 3 };
+    const VERSIONS: VersionRange = VersionRange { min: 1, max: 3 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

@@ -318,7 +318,7 @@ pub struct AddPartitionsToTxnTopic {
     /// Supported API versions: 0-5
     pub name: super::TopicName,
 
-    /// The partition indexes to add to the transaction
+    /// The partition indexes to add to the transaction.
     ///
     /// Supported API versions: 0-5
     pub partitions: Vec<i32>,
@@ -339,7 +339,7 @@ impl AddPartitionsToTxnTopic {
     }
     /// Sets `partitions` to the passed value.
     ///
-    /// The partition indexes to add to the transaction
+    /// The partition indexes to add to the transaction.
     ///
     /// Supported API versions: 0-5
     pub fn with_partitions(mut self, value: Vec<i32>) -> Self {

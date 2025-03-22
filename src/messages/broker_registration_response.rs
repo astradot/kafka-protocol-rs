@@ -17,23 +17,23 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-3
+/// Valid versions: 0-4
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct BrokerRegistrationResponse {
     /// Duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub throttle_time_ms: i32,
 
     /// The error code, or 0 if there was no error.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub error_code: i16,
 
     /// The broker's assigned epoch, or -1 if none was assigned.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub broker_epoch: i64,
 
     /// Other tagged fields
@@ -45,7 +45,7 @@ impl BrokerRegistrationResponse {
     ///
     /// Duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub fn with_throttle_time_ms(mut self, value: i32) -> Self {
         self.throttle_time_ms = value;
         self
@@ -54,7 +54,7 @@ impl BrokerRegistrationResponse {
     ///
     /// The error code, or 0 if there was no error.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -63,7 +63,7 @@ impl BrokerRegistrationResponse {
     ///
     /// The broker's assigned epoch, or -1 if none was assigned.
     ///
-    /// Supported API versions: 0-3
+    /// Supported API versions: 0-4
     pub fn with_broker_epoch(mut self, value: i64) -> Self {
         self.broker_epoch = value;
         self
@@ -152,7 +152,7 @@ impl Default for BrokerRegistrationResponse {
 }
 
 impl Message for BrokerRegistrationResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 3 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 4 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

@@ -17,13 +17,13 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Assignment {
     /// The assigned topic-partitions to the member.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub topic_partitions: Vec<TopicPartitions>,
 
     /// Other tagged fields
@@ -35,7 +35,7 @@ impl Assignment {
     ///
     /// The assigned topic-partitions to the member.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_topic_partitions(mut self, value: Vec<TopicPartitions>) -> Self {
         self.topic_partitions = value;
         self
@@ -115,22 +115,22 @@ impl Default for Assignment {
 }
 
 impl Message for Assignment {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct ConsumerGroupDescribeResponse {
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub throttle_time_ms: i32,
 
     /// Each described group.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub groups: Vec<DescribedGroup>,
 
     /// Other tagged fields
@@ -142,7 +142,7 @@ impl ConsumerGroupDescribeResponse {
     ///
     /// The duration in milliseconds for which the request was throttled due to a quota violation, or zero if the request did not violate any quota.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_throttle_time_ms(mut self, value: i32) -> Self {
         self.throttle_time_ms = value;
         self
@@ -151,7 +151,7 @@ impl ConsumerGroupDescribeResponse {
     ///
     /// Each described group.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_groups(mut self, value: Vec<DescribedGroup>) -> Self {
         self.groups = value;
         self
@@ -235,57 +235,57 @@ impl Default for ConsumerGroupDescribeResponse {
 }
 
 impl Message for ConsumerGroupDescribeResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct DescribedGroup {
     /// The describe error, or 0 if there was no error.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub error_code: i16,
 
     /// The top-level error message, or null if there was no error.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub error_message: Option<StrBytes>,
 
     /// The group ID string.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub group_id: super::GroupId,
 
     /// The group state string, or the empty string.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub group_state: StrBytes,
 
     /// The group epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub group_epoch: i32,
 
     /// The assignment epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub assignment_epoch: i32,
 
     /// The selected assignor.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub assignor_name: StrBytes,
 
     /// The members.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub members: Vec<Member>,
 
     /// 32-bit bitfield to represent authorized operations for this group.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub authorized_operations: i32,
 
     /// Other tagged fields
@@ -297,7 +297,7 @@ impl DescribedGroup {
     ///
     /// The describe error, or 0 if there was no error.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -306,7 +306,7 @@ impl DescribedGroup {
     ///
     /// The top-level error message, or null if there was no error.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_error_message(mut self, value: Option<StrBytes>) -> Self {
         self.error_message = value;
         self
@@ -315,7 +315,7 @@ impl DescribedGroup {
     ///
     /// The group ID string.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_group_id(mut self, value: super::GroupId) -> Self {
         self.group_id = value;
         self
@@ -324,7 +324,7 @@ impl DescribedGroup {
     ///
     /// The group state string, or the empty string.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_group_state(mut self, value: StrBytes) -> Self {
         self.group_state = value;
         self
@@ -333,7 +333,7 @@ impl DescribedGroup {
     ///
     /// The group epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_group_epoch(mut self, value: i32) -> Self {
         self.group_epoch = value;
         self
@@ -342,7 +342,7 @@ impl DescribedGroup {
     ///
     /// The assignment epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_assignment_epoch(mut self, value: i32) -> Self {
         self.assignment_epoch = value;
         self
@@ -351,7 +351,7 @@ impl DescribedGroup {
     ///
     /// The selected assignor.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_assignor_name(mut self, value: StrBytes) -> Self {
         self.assignor_name = value;
         self
@@ -360,7 +360,7 @@ impl DescribedGroup {
     ///
     /// The members.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_members(mut self, value: Vec<Member>) -> Self {
         self.members = value;
         self
@@ -369,7 +369,7 @@ impl DescribedGroup {
     ///
     /// 32-bit bitfield to represent authorized operations for this group.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_authorized_operations(mut self, value: i32) -> Self {
         self.authorized_operations = value;
         self
@@ -488,63 +488,68 @@ impl Default for DescribedGroup {
 }
 
 impl Message for DescribedGroup {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Member {
     /// The member ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub member_id: StrBytes,
 
     /// The member instance ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub instance_id: Option<StrBytes>,
 
     /// The member rack ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub rack_id: Option<StrBytes>,
 
     /// The current member epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub member_epoch: i32,
 
     /// The client ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub client_id: StrBytes,
 
     /// The client host.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub client_host: StrBytes,
 
     /// The subscribed topic names.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub subscribed_topic_names: Vec<super::TopicName>,
 
     /// the subscribed topic regex otherwise or null of not provided.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub subscribed_topic_regex: Option<StrBytes>,
 
     /// The current assignment.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub assignment: Assignment,
 
     /// The target assignment.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub target_assignment: Assignment,
+
+    /// -1 for unknown. 0 for classic member. +1 for consumer member.
+    ///
+    /// Supported API versions: 1
+    pub member_type: i8,
 
     /// Other tagged fields
     pub unknown_tagged_fields: BTreeMap<i32, Bytes>,
@@ -555,7 +560,7 @@ impl Member {
     ///
     /// The member ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_member_id(mut self, value: StrBytes) -> Self {
         self.member_id = value;
         self
@@ -564,7 +569,7 @@ impl Member {
     ///
     /// The member instance ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_instance_id(mut self, value: Option<StrBytes>) -> Self {
         self.instance_id = value;
         self
@@ -573,7 +578,7 @@ impl Member {
     ///
     /// The member rack ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_rack_id(mut self, value: Option<StrBytes>) -> Self {
         self.rack_id = value;
         self
@@ -582,7 +587,7 @@ impl Member {
     ///
     /// The current member epoch.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_member_epoch(mut self, value: i32) -> Self {
         self.member_epoch = value;
         self
@@ -591,7 +596,7 @@ impl Member {
     ///
     /// The client ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_client_id(mut self, value: StrBytes) -> Self {
         self.client_id = value;
         self
@@ -600,7 +605,7 @@ impl Member {
     ///
     /// The client host.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_client_host(mut self, value: StrBytes) -> Self {
         self.client_host = value;
         self
@@ -609,7 +614,7 @@ impl Member {
     ///
     /// The subscribed topic names.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_subscribed_topic_names(mut self, value: Vec<super::TopicName>) -> Self {
         self.subscribed_topic_names = value;
         self
@@ -618,7 +623,7 @@ impl Member {
     ///
     /// the subscribed topic regex otherwise or null of not provided.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_subscribed_topic_regex(mut self, value: Option<StrBytes>) -> Self {
         self.subscribed_topic_regex = value;
         self
@@ -627,7 +632,7 @@ impl Member {
     ///
     /// The current assignment.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_assignment(mut self, value: Assignment) -> Self {
         self.assignment = value;
         self
@@ -636,9 +641,18 @@ impl Member {
     ///
     /// The target assignment.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_target_assignment(mut self, value: Assignment) -> Self {
         self.target_assignment = value;
+        self
+    }
+    /// Sets `member_type` to the passed value.
+    ///
+    /// -1 for unknown. 0 for classic member. +1 for consumer member.
+    ///
+    /// Supported API versions: 1
+    pub fn with_member_type(mut self, value: i8) -> Self {
+        self.member_type = value;
         self
     }
     /// Sets unknown_tagged_fields to the passed value.
@@ -666,6 +680,9 @@ impl Encodable for Member {
         types::CompactString.encode(buf, &self.subscribed_topic_regex)?;
         types::Struct { version }.encode(buf, &self.assignment)?;
         types::Struct { version }.encode(buf, &self.target_assignment)?;
+        if version >= 1 {
+            types::Int8.encode(buf, &self.member_type)?;
+        }
         let num_tagged_fields = self.unknown_tagged_fields.len();
         if num_tagged_fields > std::u32::MAX as usize {
             bail!(
@@ -691,6 +708,9 @@ impl Encodable for Member {
         total_size += types::CompactString.compute_size(&self.subscribed_topic_regex)?;
         total_size += types::Struct { version }.compute_size(&self.assignment)?;
         total_size += types::Struct { version }.compute_size(&self.target_assignment)?;
+        if version >= 1 {
+            total_size += types::Int8.compute_size(&self.member_type)?;
+        }
         let num_tagged_fields = self.unknown_tagged_fields.len();
         if num_tagged_fields > std::u32::MAX as usize {
             bail!(
@@ -718,6 +738,11 @@ impl Decodable for Member {
         let subscribed_topic_regex = types::CompactString.decode(buf)?;
         let assignment = types::Struct { version }.decode(buf)?;
         let target_assignment = types::Struct { version }.decode(buf)?;
+        let member_type = if version >= 1 {
+            types::Int8.decode(buf)?
+        } else {
+            -1
+        };
         let mut unknown_tagged_fields = BTreeMap::new();
         let num_tagged_fields = types::UnsignedVarInt.decode(buf)?;
         for _ in 0..num_tagged_fields {
@@ -737,6 +762,7 @@ impl Decodable for Member {
             subscribed_topic_regex,
             assignment,
             target_assignment,
+            member_type,
             unknown_tagged_fields,
         })
     }
@@ -755,33 +781,34 @@ impl Default for Member {
             subscribed_topic_regex: None,
             assignment: Default::default(),
             target_assignment: Default::default(),
+            member_type: -1,
             unknown_tagged_fields: BTreeMap::new(),
         }
     }
 }
 
 impl Message for Member {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0
+/// Valid versions: 0-1
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct TopicPartitions {
     /// The topic ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub topic_id: Uuid,
 
     /// The topic name.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub topic_name: super::TopicName,
 
     /// The partitions.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub partitions: Vec<i32>,
 
     /// Other tagged fields
@@ -793,7 +820,7 @@ impl TopicPartitions {
     ///
     /// The topic ID.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_topic_id(mut self, value: Uuid) -> Self {
         self.topic_id = value;
         self
@@ -802,7 +829,7 @@ impl TopicPartitions {
     ///
     /// The topic name.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_topic_name(mut self, value: super::TopicName) -> Self {
         self.topic_name = value;
         self
@@ -811,7 +838,7 @@ impl TopicPartitions {
     ///
     /// The partitions.
     ///
-    /// Supported API versions: 0
+    /// Supported API versions: 0-1
     pub fn with_partitions(mut self, value: Vec<i32>) -> Self {
         self.partitions = value;
         self
@@ -900,7 +927,7 @@ impl Default for TopicPartitions {
 }
 
 impl Message for TopicPartitions {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 0 };
+    const VERSIONS: VersionRange = VersionRange { min: 0, max: 1 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 

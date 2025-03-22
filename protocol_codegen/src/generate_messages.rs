@@ -55,6 +55,15 @@ pub fn run(messages_module_dir: &str, mut input_file_paths: Vec<PathBuf>) -> Res
     let mut api_key_to_valid_version: HashMap<i16, VersionSpec> = HashMap::new();
 
     for input_file_path in &input_file_paths {
+        let spec_header = parse::parse_spec_header(input_file_path)?;
+        if spec_header.valid_versions.is_none() {
+            println!(
+                "Skipping generation of {} because it has no valid versions",
+                spec_header.name
+            );
+            continue;
+        }
+
         let spec = parse::parse(input_file_path)?;
         let spec_meta = (spec.type_, spec.api_key);
         let valid_versions = spec.valid_versions;

@@ -17,7 +17,7 @@ use crate::protocol::{
     Encodable, Encoder, HeaderVersion, Message, StrBytes, VersionRange,
 };
 
-/// Valid versions: 0-7
+/// Valid versions: 2-7
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct CreatableTopicConfigs {
@@ -278,32 +278,32 @@ impl Default for CreatableTopicConfigs {
 }
 
 impl Message for CreatableTopicConfigs {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 7 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 7 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-7
+/// Valid versions: 2-7
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct CreatableTopicResult {
     /// The topic name.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub name: super::TopicName,
 
-    /// The unique topic ID
+    /// The unique topic ID.
     ///
     /// Supported API versions: 7
     pub topic_id: Uuid,
 
     /// The error code, or 0 if there was no error.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub error_code: i16,
 
     /// The error message, or null if there was no error.
     ///
-    /// Supported API versions: 1-7
+    /// Supported API versions: 2-7
     pub error_message: Option<StrBytes>,
 
     /// Optional topic config error returned if configs are not returned in the response.
@@ -335,14 +335,14 @@ impl CreatableTopicResult {
     ///
     /// The topic name.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub fn with_name(mut self, value: super::TopicName) -> Self {
         self.name = value;
         self
     }
     /// Sets `topic_id` to the passed value.
     ///
-    /// The unique topic ID
+    /// The unique topic ID.
     ///
     /// Supported API versions: 7
     pub fn with_topic_id(mut self, value: Uuid) -> Self {
@@ -353,7 +353,7 @@ impl CreatableTopicResult {
     ///
     /// The error code, or 0 if there was no error.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub fn with_error_code(mut self, value: i16) -> Self {
         self.error_code = value;
         self
@@ -362,7 +362,7 @@ impl CreatableTopicResult {
     ///
     /// The error message, or null if there was no error.
     ///
-    /// Supported API versions: 1-7
+    /// Supported API versions: 2-7
     pub fn with_error_message(mut self, value: Option<StrBytes>) -> Self {
         self.error_message = value;
         self
@@ -427,12 +427,10 @@ impl Encodable for CreatableTopicResult {
             types::Uuid.encode(buf, &self.topic_id)?;
         }
         types::Int16.encode(buf, &self.error_code)?;
-        if version >= 1 {
-            if version >= 5 {
-                types::CompactString.encode(buf, &self.error_message)?;
-            } else {
-                types::String.encode(buf, &self.error_message)?;
-            }
+        if version >= 5 {
+            types::CompactString.encode(buf, &self.error_message)?;
+        } else {
+            types::String.encode(buf, &self.error_message)?;
         }
         if version >= 5 {
             types::Int32.encode(buf, &self.num_partitions)?;
@@ -483,12 +481,10 @@ impl Encodable for CreatableTopicResult {
             total_size += types::Uuid.compute_size(&self.topic_id)?;
         }
         total_size += types::Int16.compute_size(&self.error_code)?;
-        if version >= 1 {
-            if version >= 5 {
-                total_size += types::CompactString.compute_size(&self.error_message)?;
-            } else {
-                total_size += types::String.compute_size(&self.error_message)?;
-            }
+        if version >= 5 {
+            total_size += types::CompactString.compute_size(&self.error_message)?;
+        } else {
+            total_size += types::String.compute_size(&self.error_message)?;
         }
         if version >= 5 {
             total_size += types::Int32.compute_size(&self.num_partitions)?;
@@ -545,14 +541,10 @@ impl Decodable for CreatableTopicResult {
             Uuid::nil()
         };
         let error_code = types::Int16.decode(buf)?;
-        let error_message = if version >= 1 {
-            if version >= 5 {
-                types::CompactString.decode(buf)?
-            } else {
-                types::String.decode(buf)?
-            }
+        let error_message = if version >= 5 {
+            types::CompactString.decode(buf)?
         } else {
-            Some(Default::default())
+            types::String.decode(buf)?
         };
         let mut topic_config_error_code = 0;
         let num_partitions = if version >= 5 {
@@ -618,11 +610,11 @@ impl Default for CreatableTopicResult {
 }
 
 impl Message for CreatableTopicResult {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 7 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 7 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
-/// Valid versions: 0-7
+/// Valid versions: 2-7
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct CreateTopicsResponse {
@@ -633,7 +625,7 @@ pub struct CreateTopicsResponse {
 
     /// Results for each topic we tried to create.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub topics: Vec<CreatableTopicResult>,
 
     /// Other tagged fields
@@ -654,7 +646,7 @@ impl CreateTopicsResponse {
     ///
     /// Results for each topic we tried to create.
     ///
-    /// Supported API versions: 0-7
+    /// Supported API versions: 2-7
     pub fn with_topics(mut self, value: Vec<CreatableTopicResult>) -> Self {
         self.topics = value;
         self
@@ -674,9 +666,7 @@ impl CreateTopicsResponse {
 #[cfg(feature = "broker")]
 impl Encodable for CreateTopicsResponse {
     fn encode<B: ByteBufMut>(&self, buf: &mut B, version: i16) -> Result<()> {
-        if version >= 2 {
-            types::Int32.encode(buf, &self.throttle_time_ms)?;
-        }
+        types::Int32.encode(buf, &self.throttle_time_ms)?;
         if version >= 5 {
             types::CompactArray(types::Struct { version }).encode(buf, &self.topics)?;
         } else {
@@ -698,9 +688,7 @@ impl Encodable for CreateTopicsResponse {
     }
     fn compute_size(&self, version: i16) -> Result<usize> {
         let mut total_size = 0;
-        if version >= 2 {
-            total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
-        }
+        total_size += types::Int32.compute_size(&self.throttle_time_ms)?;
         if version >= 5 {
             total_size +=
                 types::CompactArray(types::Struct { version }).compute_size(&self.topics)?;
@@ -726,11 +714,7 @@ impl Encodable for CreateTopicsResponse {
 #[cfg(feature = "client")]
 impl Decodable for CreateTopicsResponse {
     fn decode<B: ByteBuf>(buf: &mut B, version: i16) -> Result<Self> {
-        let throttle_time_ms = if version >= 2 {
-            types::Int32.decode(buf)?
-        } else {
-            0
-        };
+        let throttle_time_ms = types::Int32.decode(buf)?;
         let topics = if version >= 5 {
             types::CompactArray(types::Struct { version }).decode(buf)?
         } else {
@@ -765,7 +749,7 @@ impl Default for CreateTopicsResponse {
 }
 
 impl Message for CreateTopicsResponse {
-    const VERSIONS: VersionRange = VersionRange { min: 0, max: 7 };
+    const VERSIONS: VersionRange = VersionRange { min: 2, max: 7 };
     const DEPRECATED_VERSIONS: Option<VersionRange> = None;
 }
 
