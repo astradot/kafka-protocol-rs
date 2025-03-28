@@ -111,19 +111,26 @@ mod str_bytes {
 
 pub use str_bytes::StrBytes;
 
-pub(crate) trait NewType<Inner>: From<Inner> + Into<Inner> + Borrow<Inner> {}
+///
+pub trait NewType<Inner>: From<Inner> + Into<Inner> + Borrow<Inner> {}
 
 impl<T> NewType<T> for T {}
 
-pub(crate) trait Encoder<Value> {
+///
+pub trait Encoder<Value> {
+    ///
     fn encode<B: ByteBufMut>(&self, buf: &mut B, value: Value) -> Result<()>;
+    ///
     fn compute_size(&self, value: Value) -> Result<usize>;
+    ///
     fn fixed_size(&self) -> Option<usize> {
         None
     }
 }
 
-pub(crate) trait Decoder<Value> {
+///
+pub trait Decoder<Value> {
+    ///
     fn decode<B: ByteBuf>(&self, buf: &mut B) -> Result<Value>;
 }
 
@@ -199,7 +206,8 @@ pub trait Request: Message + Encodable + Decodable + HeaderVersion {
     type Response: Message + Encodable + Decodable + HeaderVersion;
 }
 
-pub(crate) fn write_unknown_tagged_fields<B: ByteBufMut, R: RangeBounds<i32>>(
+///
+pub fn write_unknown_tagged_fields<B: ByteBufMut, R: RangeBounds<i32>>(
     buf: &mut B,
     range: R,
     unknown_tagged_fields: &BTreeMap<i32, Bytes>,
@@ -215,7 +223,8 @@ pub(crate) fn write_unknown_tagged_fields<B: ByteBufMut, R: RangeBounds<i32>>(
     Ok(())
 }
 
-pub(crate) fn compute_unknown_tagged_fields_size(
+///
+pub fn compute_unknown_tagged_fields_size(
     unknown_tagged_fields: &BTreeMap<i32, Bytes>,
 ) -> Result<usize> {
     let mut total_size = 0;
